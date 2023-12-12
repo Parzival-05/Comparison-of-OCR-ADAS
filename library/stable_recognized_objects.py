@@ -62,8 +62,8 @@ class StableRecognizedObjects:
                 min_lev = float("inf")
                 for recognized_word in recognized_words_copy:
                     lev = self.are_words_match(ground_truth_word, recognized_word)
-                    if lev != -1:
-                        min_lev = min(lev, min_lev)
+                    if lev != -1 and lev < min_lev:
+                        min_lev = lev
                         word = recognized_word
                 else:
                     if min_lev != float("inf"):
