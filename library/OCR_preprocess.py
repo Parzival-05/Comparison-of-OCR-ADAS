@@ -4,7 +4,7 @@ import numpy as np
 from scipy import ndimage
 
 EPS = pi / 4
-PERCENT_OF_EXTREME_NUMBERS = 20
+ACCEPTABLE_DEGREE_OF_ROTATION = 0.05  # radians
 
 
 class OCRPreprocess:
@@ -17,11 +17,14 @@ class OCRPreprocess:
 
     @staticmethod
     def rotate_image(image):
-        def remove_extreme_numbers(lst, x):
-            sorted_lst = sorted(lst)
-            to_remove = int(len(lst) * x / 100)
-            trimmed_lst = sorted_lst[to_remove:-to_remove]
-            return trimmed_lst
+        def remove_outliers(data):
+            if len(data) == 0:
+                return []
+            mean = np.mean(data)
+            std = np.std(data)
+            lower_bound = mean - 2 * std
+            upper_bound = mean + 2 * std
+            return [x for x in data if x >= lower_bound and x <= upper_bound]
 
         def auto_canny(image, sigma=0.33):
             # compute the median of the single channel pixel intensities
@@ -36,24 +39,23 @@ class OCRPreprocess:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         edges = auto_canny(gray)
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 100, np.array([]))
+        if lines is None:
+            return image
         thetas = []
-        if lines is not None:
-            for line in lines:
-                _, theta = line[0]
-                if -EPS < theta < EPS:
-                    theta += pi / 2
-                elif -EPS < theta - pi / 2 < EPS:
-                    pass
-                elif -EPS < theta - pi < EPS:
-                    theta -= pi / 2
-                else:
-                    continue
-                thetas.append(theta)
-        thetas = remove_extreme_numbers(sorted(thetas), PERCENT_OF_EXTREME_NUMBERS)
-        theta = sum(thetas) / len(thetas) if len(thetas) != 0 else pi / 2
-        angle = 180 * theta / pi - 90
-        img_rotated = ndimage.rotate(image, angle)
-        return img_rotated
+        for line in lines:
+            _, theta = line[0]
+            if 0 < pi / 2 - theta < EPS:
+                theta = theta - pi / 2
+            elif 0 < theta - pi / 2 < EPS:
+                theta = pi / 2 - theta
+            elif pi - theta < EPS:
+                theta = theta - pi
+            thetas.append(theta)
+        thetas = remove_outliers(thetas)
+        theta_mean = np.mean(thetas) if len(thetas) else 0
+        if abs(theta_mean) > ACCEPTABLE_DEGREE_OF_ROTATION:
+            return image
+        return ndimage.rotate(image, 180 * theta_mean / pi)
 
     @staticmethod
     def binarize(image):
