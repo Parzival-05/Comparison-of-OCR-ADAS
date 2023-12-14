@@ -64,11 +64,10 @@ class OCRPreprocess:
         _, binary_image = cv2.threshold(
             gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
         )
-        binary_image = cv2.bitwise_not(binary_image)
         return binary_image
 
     @staticmethod
     def morphology(image):
-        kernel = np.zeros((3, 3), np.uint8)
+        kernel = np.ones((3, 3), np.uint8)
         closed_image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
         return closed_image
