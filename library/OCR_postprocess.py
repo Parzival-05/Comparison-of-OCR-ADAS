@@ -1,7 +1,7 @@
 class OCRPostprocess:
-    def __init__(self, GTD: list[list[str]]):
+    def __init__(self, gtd: list[list[str]]):
         self.chars = set()
-        for words in GTD:
+        for words in gtd:
             for word in words:
                 for char in word.lower():
                     self.chars.update(char)

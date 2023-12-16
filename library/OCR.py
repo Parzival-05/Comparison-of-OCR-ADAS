@@ -6,9 +6,9 @@ from library.OCR_postprocess import OCRPostprocess
 
 
 class OCR:
-    def __init__(self, GTD, gpu=0):
+    def __init__(self, gtd, gpu=0):
         self.easyOCRModel = Reader(["ru"], gpu=gpu > 0)
-        self.OCR_postprocess = OCRPostprocess(GTD)
+        self.OCR_postprocess = OCRPostprocess(gtd)
 
     def easyOCR_ocr(self, image):
         results = self.easyOCRModel.readtext(image)
