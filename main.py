@@ -14,12 +14,19 @@ ap.add_argument(
 ap.add_argument(
     "-gtd", "--gtd", type=str, default="data.txt", help="path to ground truth data"
 )
+ap.add_argument(
+    "-r",
+    "--results",
+    type=str,
+    default="results.csv",
+    help="path to csv results file (results.csv by default)",
+)
 args = vars(ap.parse_args())
 
 vs = cv2.VideoCapture(args["video"])
 roadSignsDetection = RoadSignsDetection(args["model"])
 stableRecognizedObjects = StableRecognizedObjects(
-    roadSignsDetection=roadSignsDetection, gtd=args["gtd"]
+    roadSignsDetection=roadSignsDetection, gtd=args["gtd"], results=args["results"]
 )
 
 frame_number = -1

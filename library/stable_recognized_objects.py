@@ -11,9 +11,7 @@ RECOGNITION_THRESHOLD_OF_WORDS = 0.5
 
 
 class StableRecognizedObjects:
-    def __init__(
-        self, roadSignsDetection: RoadSignsDetection, gtd, results="result.csv"
-    ):
+    def __init__(self, roadSignsDetection: RoadSignsDetection, gtd, results):
         self.roadSignsDetection = roadSignsDetection
         with open(gtd) as f:
             self.data = list(
