@@ -18,7 +18,9 @@ args = vars(ap.parse_args())
 
 vs = cv2.VideoCapture(args["video"])
 roadSignsDetection = RoadSignsDetection(args["model"])
-stableRecognizedObjects = StableRecognizedObjects(roadSignsDetection=args["gtd"])
+stableRecognizedObjects = StableRecognizedObjects(
+    roadSignsDetection=roadSignsDetection, gtd=args["gtd"]
+)
 
 frame_number = -1
 while True:
