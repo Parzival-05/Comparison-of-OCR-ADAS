@@ -13,7 +13,6 @@ RECOGNITION_THRESHOLD_OF_WORDS = 0.5
 class StableRecognizedObjects:
     def __init__(self, roadSignsDetection: RoadSignsDetection, results="result.csv"):
         self.roadSignsDetection = roadSignsDetection
-        self.OCR = OCR()
         self.recognized = [[], []]
         with open("./data.txt") as f:
             self.data = list(
@@ -25,6 +24,7 @@ class StableRecognizedObjects:
                 )
             )
         self.filename = results
+        self.OCR = OCR(self.data)
         with open(self.filename, "w") as csvfile:
             self.fieldnames = [
                 "ocr",
@@ -84,12 +84,8 @@ class StableRecognizedObjects:
 
     def get_text_recognition_results_from_boxes(self, boxes: list, image, ocr_id):
         """Returns the result of recognizing boxes"""
-
         for road_sign in self.roadSignsDetection.get_objects(boxes, image):
-            start = time.time()
-            road_sign_preprocessed = OCRPreprocess.preprocess_image(road_sign)
-            preprocessing_timer = time.time() - start
-            yield self.OCR.ocrById(ocr_id, road_sign_preprocessed, preprocessing_timer)
+            yield self.OCR.ocrById(ocr_id, road_sign)
 
     def handle_boxes_of_objects(self, boxes: list, image):
         for ocr_id in range(2):
@@ -106,25 +102,20 @@ class StableRecognizedObjects:
                     levs_distance,
                 ) = self.is_text_recognition_correct(recognized_words_from_box)
                 if ground_truth_words:
-                    if ground_truth_words not in list(
-                        map(lambda x: x[0], recognized_words_from_box)
-                    ):
-                        if not self.is_written(ocr_id, ground_truth_words):
-                            with open(self.filename, "a", newline="") as csvfile:
-                                writer = csv.DictWriter(
-                                    csvfile, fieldnames=self.fieldnames
-                                )
-                                writer.writerow(
-                                    {
-                                        "ocr": ocr_id,
-                                        "ground_truth": ground_truth_words,
-                                        "prediction": recognized_words_from_box,
-                                        "distance": estimate_distance(boxes[index][3]),
-                                        "time": timer,
-                                        "levs_distance": levs_distance,
-                                        "not_recognized": amount_of_not_recognized_words,
-                                    }
-                                )
+                    if not self.is_written(ocr_id, ground_truth_words):
+                        with open(self.filename, "a", newline="") as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+                            writer.writerow(
+                                {
+                                    "ocr": ocr_id,
+                                    "ground_truth": ground_truth_words,
+                                    "prediction": recognized_words_from_box,
+                                    "distance": estimate_distance(boxes[index][3]),
+                                    "time": timer,
+                                    "levs_distance": levs_distance,
+                                    "not_recognized": amount_of_not_recognized_words,
+                                }
+                            )
                     else:
                         self.data.remove(ground_truth_words)
         return
