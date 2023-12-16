@@ -15,7 +15,6 @@ class StableRecognizedObjects:
         self, roadSignsDetection: RoadSignsDetection, gtd, results="result.csv"
     ):
         self.roadSignsDetection = roadSignsDetection
-        self.recognized = [[], []]
         with open(gtd) as f:
             self.data = list(
                 map(
