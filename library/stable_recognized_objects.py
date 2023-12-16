@@ -28,13 +28,15 @@ class StableRecognizedObjects:
         self.OCR = OCR(self.data)
         with open(self.filename, "w") as csvfile:
             self.fieldnames = [
-                "ocr",
-                "ground_truth",
+                "ocr_id",
+                "gtd",
                 "prediction",
                 "distance",
                 "time",
                 "levs_distance",
                 "not_recognized",
+                "amount_gtd",
+                "amount_rec",
             ]
             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
             writer.writeheader()
@@ -108,13 +110,15 @@ class StableRecognizedObjects:
                             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
                             writer.writerow(
                                 {
-                                    "ocr": ocr_id,
-                                    "ground_truth": ground_truth_words,
+                                    "ocr_id": ocr_id,
+                                    "gtd": ground_truth_words,
                                     "prediction": recognized_words_from_box,
                                     "distance": estimate_distance(boxes[index][3]),
                                     "time": timer,
                                     "levs_distance": levs_distance,
                                     "not_recognized": amount_of_not_recognized_words,
+                                    "amount_gtd": len(ground_truth_words),
+                                    "amount_rec": len(recognized_words_from_box),
                                 }
                             )
                     else:
