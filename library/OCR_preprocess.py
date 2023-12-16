@@ -68,6 +68,6 @@ class OCRPreprocess:
 
     @staticmethod
     def morphology(image):
-        kernel = np.ones((3, 3), np.uint8)
+        kernel = np.ones((1, 1), np.uint8)
         closed_image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
         return closed_image
