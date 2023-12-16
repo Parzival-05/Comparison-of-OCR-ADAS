@@ -18,8 +18,8 @@ class StableRecognizedObjects:
         with open(gtd) as f:
             self.data = list(
                 map(
-                    lambda words: sorted(
-                        list(map(lambda word: word.lower(), words[:-1].split(" ")))
+                    lambda words: list(
+                        map(lambda word: word.lower(), words[:-1].split(" "))
                     ),
                     f.readlines()[1::],
                 )

@@ -5,7 +5,6 @@ class OCRPostprocess:
             for word in words:
                 for char in word.lower():
                     self.chars.update(char)
-        print(self.chars)
 
     def remove_excess_chars(self, string: str):
         return "".join(char for char in string if char in self.chars)
