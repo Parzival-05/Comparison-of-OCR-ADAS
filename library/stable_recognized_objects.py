@@ -11,10 +11,12 @@ RECOGNITION_THRESHOLD_OF_WORDS = 0.5
 
 
 class StableRecognizedObjects:
-    def __init__(self, roadSignsDetection: RoadSignsDetection, results="result.csv"):
+    def __init__(
+        self, roadSignsDetection: RoadSignsDetection, gtd, results="result.csv"
+    ):
         self.roadSignsDetection = roadSignsDetection
         self.recognized = [[], []]
-        with open("./data.txt") as f:
+        with open(gtd) as f:
             self.data = list(
                 map(
                     lambda words: sorted(

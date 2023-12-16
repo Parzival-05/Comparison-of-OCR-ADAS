@@ -6,13 +6,19 @@ from library.road_signs_detection import RoadSignsDetection
 
 
 ap = argparse.ArgumentParser()
-ap.add_argument("-v", "--video", required=True, help="path to input image to be OCR'd")
+ap.add_argument("-v", "--video", required=True, help="path to input video to be OCR'd")
 ap.add_argument("-g", "--gpu", type=int, default=-1, help="using GPU")
+ap.add_argument(
+    "-m", "--model", type=str, default="models/yolov8m.pt", help="path to model"
+)
+ap.add_argument(
+    "-gtd", "--gtd", type=str, default="data.txt", help="path to ground truth data"
+)
 args = vars(ap.parse_args())
 
 vs = cv2.VideoCapture(args["video"])
-roadSignsDetection = RoadSignsDetection("models/yolov8m.pt")
-stableRecognizedObjects = StableRecognizedObjects(roadSignsDetection=roadSignsDetection)
+roadSignsDetection = RoadSignsDetection(args["model"])
+stableRecognizedObjects = StableRecognizedObjects(roadSignsDetection=args["gtd"])
 
 frame_number = -1
 while True:
