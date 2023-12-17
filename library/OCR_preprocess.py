@@ -7,6 +7,27 @@ EPS = pi / 4
 ACCEPTABLE_DEGREE_OF_ROTATION = 0.05  # radians
 
 
+def remove_outliers(data):
+    if len(data) == 0:
+        return []
+    mean = np.mean(data)
+    std = np.std(data)
+    lower_bound = mean - 2 * std
+    upper_bound = mean + 2 * std
+    return [x for x in data if x >= lower_bound and x <= upper_bound]
+
+
+def auto_canny(image, sigma=0.33):
+    # compute the median of the single channel pixel intensities
+    v = np.median(image)
+    # apply automatic Canny edge detection using the computed median
+    lower = int(max(0, (1.0 - sigma) * v))
+    upper = int(min(255, (1.0 + sigma) * v))
+    edged = cv2.Canny(image, lower, upper)
+    # return the edged image
+    return edged
+
+
 class OCRPreprocess:
     @staticmethod
     def preprocess_image(image):
@@ -17,25 +38,6 @@ class OCRPreprocess:
 
     @staticmethod
     def rotate_image(image):
-        def remove_outliers(data):
-            if len(data) == 0:
-                return []
-            mean = np.mean(data)
-            std = np.std(data)
-            lower_bound = mean - 2 * std
-            upper_bound = mean + 2 * std
-            return [x for x in data if x >= lower_bound and x <= upper_bound]
-
-        def auto_canny(image, sigma=0.33):
-            # compute the median of the single channel pixel intensities
-            v = np.median(image)
-            # apply automatic Canny edge detection using the computed median
-            lower = int(max(0, (1.0 - sigma) * v))
-            upper = int(min(255, (1.0 + sigma) * v))
-            edged = cv2.Canny(image, lower, upper)
-            # return the edged image
-            return edged
-
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         edges = auto_canny(gray)
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 100, np.array([]))
