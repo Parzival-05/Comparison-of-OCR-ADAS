@@ -19,7 +19,7 @@ class StableRecognizedObjects:
                     lambda words: list(
                         map(lambda word: word.lower(), words[:-1].split(" "))
                     ),
-                    f.readlines()[1::],
+                    f.readlines(),
                 )
             )
         self.filename = results
